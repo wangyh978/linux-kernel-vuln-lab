@@ -1,0 +1,19 @@
+#!/bin/sh
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev || mount -t tmpfs tmpfs /dev
+mkdir -p /dev/pts /tmp /run
+mount -t devpts devpts /dev/pts 2>/dev/null
+
+echo 1 > /proc/sys/kernel/panic_on_oops 2>/dev/null
+echo 0 > /proc/sys/kernel/kptr_restrict 2>/dev/null
+
+echo "[lab] boot complete"
+echo "[lab] running /root/repro.sh if present"
+
+if [ -x /root/repro.sh ]; then
+  /root/repro.sh
+fi
+
+echo "[lab] dropping to interactive shell"
+exec /bin/sh
